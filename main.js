@@ -76,7 +76,22 @@ function create() {
     this.physics.add.collider(this.bullets, this.enemies, bulletHitEnemy, null, this);
     this.physics.add.collider(this.player, this.enemies, playerHitEnemy, null, this);
 
-    this.input.keyboard.on('keydown-SPACE', shoot, this);
+    // キー操作による弾の発射
+    this.input.keyboard.on('keydown-A', function () {
+        shoot.call(this, 'right');
+    }, this);
+    
+    this.input.keyboard.on('keydown-S', function () {
+        shoot.call(this, 'left');
+    }, this);
+    
+    this.input.keyboard.on('keydown-D', function () {
+        shoot.call(this, 'down');
+    }, this);
+    
+    this.input.keyboard.on('keydown-F', function () {
+        shoot.call(this, 'up');
+    }, this);
 }
 
 function update() {
@@ -117,24 +132,71 @@ function update() {
     }, this);
 }
 
-function shoot() {
+function shoot(direction) {
     var currentTime = this.time.now;
 
     if (currentTime > lastFired) {
-        var bullet = this.bullets.get(this.player.x, this.player.y - 20);
+        var bullet;
+        switch (direction) {
+            case 'right':
+                bullet = this.bullets.get(this.player.x + 20, this.player.y);
+                break;
+            case 'left':
+                bullet = this.bullets.get(this.player.x - 20, this.player.y);
+                break;
+            case 'down':
+                bullet = this.bullets.get(this.player.x, this.player.y + 20);
+                break;
+            case 'up':
+                bullet = this.bullets.get(this.player.x, this.player.y - 20);
+                break;
+            default:
+                break;
+        }
 
         if (!bullet) {
-            bullet = this.physics.add.image(this.player.x, this.player.y - 20, 'bullet');
+            switch (direction) {
+                case 'right':
+                    bullet = this.physics.add.image(this.player.x + 20, this.player.y, 'bullet');
+                    break;
+                case 'left':
+                    bullet = this.physics.add.image(this.player.x - 20, this.player.y, 'bullet');
+                    break;
+                case 'down':
+                    bullet = this.physics.add.image(this.player.x, this.player.y + 20, 'bullet');
+                    break;
+                case 'up':
+                    bullet = this.physics.add.image(this.player.x, this.player.y - 20, 'bullet');
+                    break;
+                default:
+                    break;
+            }
             this.bullets.add(bullet);
             bullet.setCollideWorldBounds(true);
             bullet.on('worldbounds', function() {
                 bullet.disableBody(true, true);
             });
         } else {
-            bullet.enableBody(true, this.player.x, this.player.y - 20, true, true);
+            bullet.enableBody(true, true);
         }
 
-        bullet.setVelocityY(-300);
+        switch (direction) {
+            case 'right':
+                bullet.setVelocityX(300);
+                break;
+            case 'left':
+                bullet.setVelocityX(-300);
+                break;
+            case 'down':
+                bullet.setVelocityY(300);
+                break;
+            case 'up':
+                bullet.setVelocityY(-300);
+                break;
+            default:
+                break;
+        }
+
         lastFired = currentTime + fireRate;
     }
 }
