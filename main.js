@@ -23,6 +23,7 @@ var lastFired = 0;
 var fireRate = 300; // 射撃の間隔
 var playerSpeed = 200; // プレイヤーの移動速度
 var enemySpeed = 150; // 敵の移動速度
+var gameOver = false;
 
 function preload() {
     this.load.image('player', 'assets/player.jpg');
@@ -47,18 +48,19 @@ function create() {
     // キーボード入力の設定
     this.cursors = this.input.keyboard.createCursorKeys();
 
-    // 弾のグループ設定（無限）
+    // 弾のグループ設定
     this.bullets = this.physics.add.group({
         defaultKey: 'bullet',
-        maxSize: 0  // 無限にする
+        maxSize: 30,
+        runChildUpdate: true
     });
 
     // 敵キャラクターのグループ設定（小さく表示）
     this.enemies = this.physics.add.group({
         key: 'enemy',
         repeat: 5,
-        setXY: { x: 100, y: 100, stepX: 100 },
-        setScale: { x: 0.5, y: 0.5 } // 画像を縮小
+        setXY: { x: 100, y: 100, stepX: 150 },
+        setScale: { x: 0.5, y: 0.5 }
     });
 
     // 敵の動きを制御するための初期設定
@@ -78,6 +80,14 @@ function create() {
 }
 
 function update() {
+    if (gameOver) {
+        this.player.setVelocity(0);
+        Phaser.Actions.Call(this.enemies.getChildren(), function (enemy) {
+            enemy.setVelocity(0);
+        }, this);
+        return;
+    }
+
     // プレイヤーの移動
     if (this.cursors.left.isDown) {
         this.player.setVelocityX(-playerSpeed);
@@ -113,14 +123,19 @@ function shoot() {
     if (currentTime > lastFired) {
         var bullet = this.bullets.get(this.player.x, this.player.y - 20);
 
-        if (bullet) {
-            bullet.setActive(true);
-            bullet.setVisible(true);
-            bullet.setScale(0.5); // 弾の画像を縮小
-            bullet.setVelocityY(-300);
-
-            lastFired = currentTime + fireRate;
+        if (!bullet) {
+            bullet = this.physics.add.image(this.player.x, this.player.y - 20, 'bullet');
+            this.bullets.add(bullet);
+            bullet.setCollideWorldBounds(true);
+            bullet.on('worldbounds', function() {
+                bullet.disableBody(true, true);
+            });
+        } else {
+            bullet.enableBody(true, this.player.x, this.player.y - 20, true, true);
         }
+
+        bullet.setVelocityY(-300);
+        lastFired = currentTime + fireRate;
     }
 }
 
@@ -134,15 +149,11 @@ function bulletHitEnemy(bullet, enemy) {
 }
 
 function playerHitEnemy(player, enemy) {
-    // プレイヤーと敵が衝突した場合の処理
-    player.disableBody(true, true);
+    player.setTint(0xff0000); // プレイヤーを赤くする
+    gameOver = true;
 
-    // ゲームオーバー処理
-    gameOver();
-}
+    var gameOverText = this.add.text(400, 300, 'Game Over', { fontSize: '64px', fill: '#ff0000' });
+    gameOverText.setOrigin(0.5, 0.5);
 
-function gameOver() {
-    // ゲームオーバー時の処理をここに記述
-    // 今回はスコア表示を更新して終了する例を示します
-    scoreText.setText('Game Over\nFinal Score: ' + score);
+    this.physics.pause(); // ゲームを一時停止
 }
