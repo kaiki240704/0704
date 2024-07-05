@@ -18,7 +18,7 @@ var config = {
 
 var game = new Phaser.Game(config);
 var score = 0;
-var scoreText;
+var scoreText; // スコア表示用のテキストオブジェクト
 var lastFired = 0;
 var fireRate = 300; // 射撃の間隔
 var playerSpeed = 200; // プレイヤーの移動速度
