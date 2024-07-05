@@ -22,7 +22,7 @@ var scoreText;
 var lastFired = 0;
 var fireRate = 300; // 射撃の間隔
 var playerSpeed = 200; // プレイヤーの移動速度
-var enemySpeed = 150; // 敵の移動速度を増やす
+var enemySpeed = 150; // 敵の移動速度
 
 function preload() {
     this.load.image('player', 'assets/player.jpg');
@@ -135,5 +135,14 @@ function bulletHitEnemy(bullet, enemy) {
 
 function playerHitEnemy(player, enemy) {
     // プレイヤーと敵が衝突した場合の処理
-    // 今回は何もしませんが、必要に応じて追加してください
+    player.disableBody(true, true);
+
+    // ゲームオーバー処理
+    gameOver();
+}
+
+function gameOver() {
+    // ゲームオーバー時の処理をここに記述
+    // 今回はスコア表示を更新して終了する例を示します
+    scoreText.setText('Game Over\nFinal Score: ' + score);
 }
