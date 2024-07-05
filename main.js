@@ -55,10 +55,10 @@ function create() {
         runChildUpdate: true
     });
 
-    // 敵キャラクターのグループ設定（小さく表示）
+    // 敵キャラクターのグループ設定（小さく表示、10体）
     this.enemies = this.physics.add.group({
         key: 'enemy',
-        repeat: 5,
+        repeat: 9,  // 10体の敵を設定するため、repeatを9に設定（最初の1体も含むため）
         setXY: { x: 100, y: 100, stepX: 150 },
         setScale: { x: 0.5, y: 0.5 }
     });
