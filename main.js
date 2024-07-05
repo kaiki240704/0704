@@ -70,7 +70,7 @@ function create() {
     }, this);
 
     // スコア表示の設定
-    scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#000' });
+    scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#000' }).setScrollFactor(0);
 
     // 当たり判定
     this.physics.add.collider(this.bullets, this.enemies, bulletHitEnemy, null, this);
@@ -136,48 +136,17 @@ function shoot(direction) {
     var currentTime = this.time.now;
 
     if (currentTime > lastFired) {
-        var bullet;
-        switch (direction) {
-            case 'right':
-                bullet = this.bullets.get(this.player.x + 20, this.player.y);
-                break;
-            case 'left':
-                bullet = this.bullets.get(this.player.x - 20, this.player.y);
-                break;
-            case 'down':
-                bullet = this.bullets.get(this.player.x, this.player.y + 20);
-                break;
-            case 'up':
-                bullet = this.bullets.get(this.player.x, this.player.y - 20);
-                break;
-            default:
-                break;
-        }
+        var bullet = this.bullets.get(this.player.x, this.player.y);
 
         if (!bullet) {
-            switch (direction) {
-                case 'right':
-                    bullet = this.physics.add.image(this.player.x + 20, this.player.y, 'bullet');
-                    break;
-                case 'left':
-                    bullet = this.physics.add.image(this.player.x - 20, this.player.y, 'bullet');
-                    break;
-                case 'down':
-                    bullet = this.physics.add.image(this.player.x, this.player.y + 20, 'bullet');
-                    break;
-                case 'up':
-                    bullet = this.physics.add.image(this.player.x, this.player.y - 20, 'bullet');
-                    break;
-                default:
-                    break;
-            }
+            bullet = this.physics.add.image(this.player.x, this.player.y, 'bullet');
             this.bullets.add(bullet);
             bullet.setCollideWorldBounds(true);
             bullet.on('worldbounds', function() {
                 bullet.disableBody(true, true);
             });
         } else {
-            bullet.enableBody(true, true);
+            bullet.enableBody(true, this.player.x, this.player.y, true, true);
         }
 
         switch (direction) {
