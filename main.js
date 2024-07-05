@@ -21,6 +21,8 @@ var score = 0;
 var scoreText;
 var lastFired = 0;
 var fireRate = 300; // 射撃の間隔
+var playerSpeed = 200; // プレイヤーの移動速度
+var enemySpeed = 150; // 敵の移動速度を増やす
 
 function preload() {
     this.load.image('player', 'assets/player.jpg');
@@ -61,7 +63,8 @@ function create() {
 
     // 敵の動きを制御するための初期設定
     Phaser.Actions.Call(this.enemies.getChildren(), function (enemy) {
-        enemy.setVelocityX(Phaser.Math.Between(-100, 100));
+        enemy.setVelocityX(Phaser.Math.Between(-enemySpeed, enemySpeed));
+        enemy.setVelocityY(Phaser.Math.Between(-enemySpeed, enemySpeed));
     }, this);
 
     // スコア表示の設定
@@ -75,28 +78,31 @@ function create() {
 }
 
 function update() {
+    // プレイヤーの移動
     if (this.cursors.left.isDown) {
-        this.player.setVelocityX(-200);
+        this.player.setVelocityX(-playerSpeed);
     } else if (this.cursors.right.isDown) {
-        this.player.setVelocityX(200);
+        this.player.setVelocityX(playerSpeed);
     } else {
         this.player.setVelocityX(0);
     }
 
     if (this.cursors.up.isDown) {
-        this.player.setVelocityY(-200);
+        this.player.setVelocityY(-playerSpeed);
     } else if (this.cursors.down.isDown) {
-        this.player.setVelocityY(200);
+        this.player.setVelocityY(playerSpeed);
     } else {
         this.player.setVelocityY(0);
     }
 
     // 敵キャラクターの動き
     Phaser.Actions.Call(this.enemies.getChildren(), function (enemy) {
-        if (enemy.x <= 50) {
-            enemy.setVelocityX(Phaser.Math.Between(50, 100));
-        } else if (enemy.x >= 1550) {
-            enemy.setVelocityX(Phaser.Math.Between(-100, -50));
+        // 画面端で反転するように設定
+        if (enemy.x <= 50 || enemy.x >= 1550) {
+            enemy.setVelocityX(-enemy.body.velocity.x);
+        }
+        if (enemy.y <= 50 || enemy.y >= 1150) {
+            enemy.setVelocityY(-enemy.body.velocity.y);
         }
     }, this);
 }
