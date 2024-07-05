@@ -24,6 +24,7 @@ var fireRate = 300; // 射撃の間隔
 var playerSpeed = 200; // プレイヤーの移動速度
 var enemySpeed = 150; // 敵の移動速度
 var gameOver = false;
+var gameClear = false;
 
 function preload() {
     this.load.image('player', 'assets/player.jpg');
@@ -103,6 +104,11 @@ function update() {
         return;
     }
 
+    if (gameClear) {
+        this.player.setVelocity(0);
+        return;
+    }
+
     // プレイヤーの移動
     if (this.cursors.left.isDown) {
         this.player.setVelocityX(-playerSpeed);
@@ -130,6 +136,13 @@ function update() {
             enemy.setVelocityY(-enemy.body.velocity.y);
         }
     }, this);
+
+    // 敵の数をチェックし、すべて倒された場合にクリア画面を表示
+    if (this.enemies.countActive(true) === 0) {
+        gameClear = true;
+        var clearText = this.add.text(400, 300, 'Game Clear!', { fontSize: '64px', fill: '#00ff00' });
+        clearText.setOrigin(0.5, 0.5);
+    }
 }
 
 function shoot(direction) {
