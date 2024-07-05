@@ -8,6 +8,7 @@ var config = {
             gravity: { y: 0 }
         }
     },
+    backgroundColor: '#ffffff', // 背景色を白色に設定
     scene: {
         preload: preload,
         create: create,
@@ -32,10 +33,6 @@ function create() {
     // フィールドのサイズを設定
     this.cameras.main.setBounds(0, 0, 1600, 1200);
     this.physics.world.setBounds(0, 0, 1600, 1200);
-
-    // 背景画像を追加（小さく表示）
-    var background = this.add.image(800, 600, 'background').setOrigin(0.5);
-    background.setScale(0.5); // 画像を縮小
 
     // プレイヤーキャラクターの設定（小さく表示）
     this.player = this.physics.add.sprite(400, 500, 'player');
