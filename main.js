@@ -194,3 +194,32 @@ function shoot() {
         bullet.setVelocityY(-300);
     }
 }
+var config = {
+    type: Phaser.AUTO,
+    width: 800,
+    height: 600,
+    physics: {
+        default: 'arcade',
+        arcade: {
+            gravity: { y: 0 }
+        }
+    },
+    scene: {
+        preload: preload,
+        create: create,
+        update: update
+    }
+};
+
+var game = new Phaser.Game(config);
+
+function preload () {
+    this.load.image('player', 'assets/player.jpg');
+    this.load.image('bullet', 'assets/bullet.jpg');
+    this.load.image('enemy', 'assets/enemy.jpg');
+    this.load.image('background', 'assets/background.jpg');
+}
+
+function create () {
+    // フィールドのサイズを設定
+    this.cameras.main.setBounds(0, 0, 1600, 
