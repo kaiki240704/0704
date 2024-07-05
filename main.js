@@ -18,6 +18,8 @@ var config = {
 var game = new Phaser.Game(config);
 var score = 0;
 var scoreText;
+var lastFired = 0;
+var fireRate = 300; // 射撃の間隔
 
 function preload() {
     this.load.image('player', 'assets/player.jpg');
@@ -103,13 +105,19 @@ function update() {
 }
 
 function shoot() {
-    var bullet = this.bullets.get(this.player.x, this.player.y - 20);
+    var currentTime = this.time.now;
 
-    if (bullet) {
-        bullet.setActive(true);
-        bullet.setVisible(true);
-        bullet.setScale(0.5); // 弾の画像を縮小
-        bullet.setVelocityY(-300);
+    if (currentTime > lastFired) {
+        var bullet = this.bullets.get(this.player.x, this.player.y - 20);
+
+        if (bullet) {
+            bullet.setActive(true);
+            bullet.setVisible(true);
+            bullet.setScale(0.5); // 弾の画像を縮小
+            bullet.setVelocityY(-300);
+
+            lastFired = currentTime + fireRate;
+        }
     }
 }
 
